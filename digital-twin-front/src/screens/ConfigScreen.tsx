@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useApiUrl } from '../context/ApiUrlContext';
 
 const ConfigScreen = ({ navigation }: { navigation: any }) => {
-  const [apiUrl, setApiUrl] = useState('http://localhost:3000'); // Valor inicial
-  // Aqui você pode adicionar lógica para carregar uma URL salva anteriormente
+  const { apiUrl: contextApiUrl, setApiUrl: setContextApiUrl } = useApiUrl();
+  const [apiUrl, setApiUrl] = useState(contextApiUrl);
 
   const handleSave = () => {
-    // Aqui você salvaria a URL (por exemplo, em AsyncStorage)
+    setContextApiUrl(apiUrl);
     console.log('URL da API salva:', apiUrl);
-    navigation.navigate('Splash'); // Volta para a tela de Splash/Login
+    navigation.navigate('Splash');
   };
 
   return (
@@ -28,6 +30,7 @@ const ConfigScreen = ({ navigation }: { navigation: any }) => {
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SensorListScreen from '../screens/SensorListScreen';
 import SensorDetailScreen from '../screens/SensorDetailScreen';
 import SplashScreen from '../screens/SplashScreen';
-import ConfigScreen from '../screens/ConfigScreen'; // Importe a ConfigScreen
+import ConfigScreen from '../screens/ConfigScreen';
 
 const Stack = createNativeStackNavigator();
 

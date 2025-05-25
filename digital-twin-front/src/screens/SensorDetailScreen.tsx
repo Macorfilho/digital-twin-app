@@ -1,5 +1,6 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Dimensions } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity } from 'react-native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 
 interface SensorDetailRouteParams {
   sensor: {
@@ -8,7 +9,6 @@ interface SensorDetailRouteParams {
     unit: string;
     currentValue: number;
     status: 'OK' | 'Alerta';
-    history: number[];
   };
 }
 
@@ -16,11 +16,42 @@ interface SensorDetailScreenProps {
   route: { params: SensorDetailRouteParams };
 }
 
+interface Reading {
+  id: number;
+  sensorId: string;
+  value: number;
+  timestamp: string;
+}
+
 const SensorDetailScreen: React.FC<SensorDetailScreenProps> = ({ route }) => {
   const { sensor } = route.params;
+  const [readings, setReadings] = useState<Reading[]>([]);
+  const API_BASE_URL = 'http://localhost:8080/api';
+  const navigation = useNavigation();
 
-  const renderHistoryItem = ({ item }: { item: number }) => (
-    <Text style={styles.historyItem}>{item} {sensor.unit}</Text>
+  useEffect(() => {
+    const fetchReadings = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/readings/${sensor.id}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data: Reading[] = await response.json();
+        setReadings(data);
+      } catch (error) {
+        console.error('Erro ao buscar leituras:', error);
+        // Adicione tratamento de erro adequado aqui
+      }
+    };
+
+    fetchReadings();
+  }, [sensor.id]);
+
+  const renderReadingItem = ({ item }: { item: Reading }) => (
+    <View style={styles.readingItem}>
+      <Text>Valor: {item.value}</Text>
+      <Text>Timestamp: {new Date(item.timestamp).toLocaleString()}</Text>
+    </View>
   );
 
   const handleUpdate = () => {
@@ -33,14 +64,12 @@ const SensorDetailScreen: React.FC<SensorDetailScreenProps> = ({ route }) => {
       <Text style={styles.currentValue}>Valor Atual: {sensor.currentValue} {sensor.unit}</Text>
       <Text style={{ color: sensor.status === 'OK' ? 'green' : 'red', fontWeight: 'bold' }}>Status: {sensor.status}</Text>
 
-      <View style={styles.historyListContainer}>
-        <Text style={styles.subtitle}>Histórico em Lista:</Text>
-        <FlatList
-          data={sensor.history}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={renderHistoryItem}
-        />
-      </View>
+      <Text style={styles.subtitle}>Leituras:</Text>
+      <FlatList
+        data={readings}
+        keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
+        renderItem={renderReadingItem}
+      />
 
       <Button title="Atualizar" onPress={handleUpdate} />
     </View>
@@ -67,16 +96,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 10,
   },
-  chartContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  historyListContainer: {
-    marginBottom: 20,
-  },
-  historyItem: {
-    fontSize: 16,
-    paddingVertical: 5,
+  readingItem: {
+    backgroundColor: '#f9f9f9',
+    padding: 15,
+    marginVertical: 8,
+    borderRadius: 5,
   },
 });
 
