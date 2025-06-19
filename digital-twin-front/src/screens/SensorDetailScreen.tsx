@@ -1,51 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, TouchableOpacity } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, Button, ActivityIndicator, Alert } from 'react-native';
+import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { useApiUrl } from '../context/ApiUrlContext'; // Import useApiUrl
 
-interface SensorDetailRouteParams {
+// Definição do tipo para os parâmetros de rota
+type SensorDetailRouteParams = {
   sensor: {
-    id: string;
+    id: string; // ou number, dependendo do seu backend
     name: string;
     unit: string;
     currentValue: number;
     status: 'OK' | 'Alerta';
   };
-}
+};
 
-interface SensorDetailScreenProps {
-  route: { params: SensorDetailRouteParams };
-}
+// Definição do tipo para a rota
+type SensorDetailScreenRouteProp = RouteProp<{ SensorDetail: SensorDetailRouteParams }, 'SensorDetail'>;
 
 interface Reading {
-  id: number;
+  id: number; // ou string, consistente com seu backend
   sensorId: string;
   value: number;
   timestamp: string;
 }
 
-const SensorDetailScreen: React.FC<SensorDetailScreenProps> = ({ route }) => {
-  const { sensor } = route.params;
-  const [readings, setReadings] = useState<Reading[]>([]);
-  const API_BASE_URL = 'http://localhost:8080/api';
+const SensorDetailScreen: React.FC = () => {
+  const route = useRoute<SensorDetailScreenRouteProp>();
   const navigation = useNavigation();
+  const { sensor } = route.params;
+  const { apiUrl } = useApiUrl(); // Use the apiUrl from the context!
+  const [readings, setReadings] = useState<Reading[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchReadings = async () => {
+      if (!apiUrl) {
+        setError('URL da API não configurada. Por favor, configure-a.');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const response = await fetch(`${API_BASE_URL}/readings/${sensor.id}`);
+        setLoading(true);
+        setError(null);
+
+        // Use the apiUrl from the context!
+        const response = await fetch(`${apiUrl}/readings/${sensor.id}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`Erro ao buscar leituras: Status ${response.status}. Detalhes: ${errorText || 'N/A'}`);
         }
         const data: Reading[] = await response.json();
         setReadings(data);
-      } catch (error) {
-        console.error('Erro ao buscar leituras:', error);
-        // Adicione tratamento de erro adequado aqui
+      } catch (err: any) {
+        console.error('Erro ao buscar leituras:', err);
+        setError(`Não foi possível carregar as leituras: ${err.message}`);
+        Alert.alert('Erro', `Falha ao carregar leituras do sensor. Detalhes: ${err.message}`);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchReadings();
-  }, [sensor.id]);
+  }, [apiUrl, sensor.id]);
 
   const renderReadingItem = ({ item }: { item: Reading }) => (
     <View style={styles.readingItem}>
@@ -58,6 +76,26 @@ const SensorDetailScreen: React.FC<SensorDetailScreenProps> = ({ route }) => {
     alert('Atualizar dados do sensor!');
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text style={{ marginTop: 10 }}>Carregando leituras...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>{error}</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.retryButtonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{sensor.name}</Text>
@@ -67,7 +105,7 @@ const SensorDetailScreen: React.FC<SensorDetailScreenProps> = ({ route }) => {
       <Text style={styles.subtitle}>Leituras:</Text>
       <FlatList
         data={readings}
-        keyExtractor={(item) => item.id ? item.id.toString() : Math.random().toString()}
+        keyExtractor={(item) => item.id.toString()} // Use item.id directly, assuming it's a unique number or string
         renderItem={renderReadingItem}
       />
 
@@ -101,6 +139,29 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 8,
     borderRadius: 5,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
