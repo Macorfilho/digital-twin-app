@@ -27,9 +27,9 @@ A organização deste repositório foi pensada para promover clareza e facilitar
 │   ├── pom.xml              # Arquivo de configuração do Maven para o backend
 │   └── ...                  # Outros arquivos de configuração e recursos do backend
 └── digital-twin-front/      # Pasta raiz do projeto Frontend (React Native)
-├── src/                 # Contém o código-fonte JavaScript/TypeScript do frontend
-├── package.json         # Arquivo de manifesto do Node.js/React Native
-└── ...                  # Outros arquivos de configuração e recursos do frontend
+    ├── src/                 # Contém o código-fonte JavaScript/TypeScript do frontend
+    ├── package.json         # Arquivo de manifesto do Node.js/React Native
+    └── ...                  # Outros arquivos de configuração e recursos do frontend
 
 
 Essa estrutura facilita o gerenciamento de dependências separadas, a execução independente de cada parte e a colaboração entre equipes ou desenvolvedores focados em áreas específicas.
