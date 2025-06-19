@@ -1,57 +1,151 @@
 # Digital Twin App - Backend (Spring Boot)
 
-Este diretório contém o código-fonte do backend, construído com Spring Boot e Java.
+Este diretório contém o código-fonte do backend da aplicação Digital Twin, construído com Spring Boot e Java. Ele fornece uma API RESTful para gerenciar sensores e suas leituras.
 
 ## Pré-requisitos
 
-Certifique-se de ter os seguintes pré-requisitos instalados em sua máquina:
+Certifique-se de ter os seguintes pré-requisitos instalados em sua máquina de desenvolvimento:
 
-- Java Development Kit (JDK) - versão 24 ou superior recomendada
-- Maven
+- **Java Development Kit (JDK)**: Versão 17 ou superior recomendada.
+- **Apache Maven**: Ferramenta de automação de build.
 
-## Como Executar
+## Como Compilar e Executar
 
-Siga estas etapas para executar o backend:
+Siga estas etapas para colocar o backend em funcionamento:
 
-1.  **Navegue até o diretório do projeto:**
+1. Navegue até o diretório do projeto backend:
 
+    ```bash
     cd digital-twin
+    ```
 
-2.  **Execute a aplicação Spring Boot usando o Maven:**
+2. Execute a aplicação Spring Boot usando o Maven:
 
+    ```bash
     mvn spring-boot:run
+    ```
 
-    Isso irá compilar o projeto e iniciar o servidor Tomcat embutido, onde a aplicação estará rodando por padrão na porta `8080`.
+Isso irá compilar o projeto, baixar as dependências necessárias e iniciar o servidor web Tomcat embutido. A aplicação estará disponível por padrão na porta 8080.
 
 ## Arquitetura
 
-O backend segue uma arquitetura RESTful simples. As principais partes incluem:
+O backend segue uma arquitetura RESTful com camadas bem definidas:
 
-- **Modelos (`src/main/java/com/newbyte/digital_twin/model/`)**: Define as entidades de dados (Sensor, Reading).
-- **Repositórios (`src/main/java/com/newbyte/digital_twin/repository/`)**: Interfaces para interação com o banco de dados usando Spring Data JPA.
-- **Controladores (`src/main/java/com/newbyte/digital_twin/controller/`)**: Lidam com as requisições HTTP e retornam as respostas.
-- **Serviços (`src/main/java/com/newbyte/digital_twin/service/`)**: (Opcional, pode ser adicionado para lógica de negócios mais complexa).
-- **Inicializador de Dados (`src/main/java/com/newbyte/digital_twin/DataInitializer.java`)**: Popula o banco de dados H2 com dados de exemplo na inicialização.
+- **Modelos** (`src/main/java/com/newbyte/digital_twin/model/`): Define as entidades de dados (ex: Sensor, Reading).
+- **Repositórios** (`src/main/java/com/newbyte/digital_twin/repository/`): Interfaces com Spring Data JPA.
+- **Serviços** (`src/main/java/com/newbyte/digital_twin/service/`): Contém a lógica de negócios.
+- **Controladores** (`src/main/java/com/newbyte/digital_twin/controller/`): Lidam com requisições HTTP e retornam JSON.
+- **Inicializador de Dados** (`src/main/java/com/newbyte/digital_twin/DataInitializer.java`): Popula o banco de dados H2 com dados de exemplo.
 
 ## Banco de Dados
 
-O backend utiliza o banco de dados embutido H2 para persistência. O arquivo do banco de dados é armazenado em `./data/readings.mv.db` (relativo ao diretório onde a aplicação é executada).
+O backend utiliza o banco de dados embutido H2. O arquivo do banco é armazenado em:
 
-Você pode acessar o console do H2 em `http://localhost:8080/h2-console` enquanto a aplicação estiver rodando. Use a URL JDBC `jdbc:h2:file:./data/readings`, com nome de usuário `sa` e deixe a senha em branco.
+```
+./data/readings.mv.db
+```
+
+## Console H2
+
+Acesse o console web H2 em:
+
+- **URL**: http://localhost:8080/h2-console  
+- **JDBC**: `jdbc:h2:file:./data/readings`  
+- **Usuário**: `sa`  
+- **Senha**: (deixe em branco)
 
 ## Endpoints da API
 
-Os seguintes endpoints REST estão disponíveis:
+### GET `/api/sensors`
 
-- `GET /api/sensors`: Retorna a lista de todos os sensores.
-- `GET /api/sensors/{id}`: Retorna os detalhes de um sensor específico pelo seu ID.
-- `GET /api/readings/{sensorId}`: Retorna a lista de leituras para um sensor específico.
-- `POST /api/readings`: Adiciona uma nova leitura de sensor. Espera um objeto Reading no corpo da requisição.
+Retorna todos os sensores.  
+**Exemplo de resposta:**
+
+```json
+[
+  {
+    "id": "sensor-1",
+    "name": "Sensor de Temperatura",
+    "unit": "°C",
+    "currentValue": 25.3,
+    "status": "OK"
+  }
+]
+```
+
+### GET `/api/sensors/{id}`
+
+Retorna os detalhes de um sensor por ID.
+
+```json
+{
+  "id": "sensor-1",
+  "name": "Sensor de Temperatura",
+  "unit": "°C",
+  "currentValue": 25.3,
+  "status": "OK"
+}
+```
+
+### GET `/api/readings/{sensorId}`
+
+Lista de leituras de um sensor específico.
+
+```json
+[
+  {
+    "id": 1,
+    "sensorId": "sensor-1",
+    "value": 25.1,
+    "timestamp": "2025-06-18T10:00:00"
+  }
+]
+```
+
+### POST `/api/readings`
+
+Adiciona nova leitura.  
+**Corpo da requisição:**
+
+```json
+{
+  "sensorId": "sensor-2",
+  "value": 28.5,
+  "timestamp": "2025-06-20T14:30:00"
+}
+```
+
+## Exemplos cURL
+
+- Obter todos os sensores:
+
+  ```bash
+  curl http://localhost:8080/api/sensors
+  ```
+
+- Obter leituras de um sensor:
+
+  ```bash
+  curl http://localhost:8080/api/readings/sensor-1
+  ```
+
+- Adicionar nova leitura:
+
+  ```bash
+  curl -X POST -H "Content-Type: application/json" -d '{
+    "sensorId": "sensor-3",
+    "value": 75.2,
+    "timestamp": "2025-06-20T15:00:00"
+  }' http://localhost:8080/api/readings
+  ```
+
+## Configuração CORS
+
+Definida em `WebConfig.java`, permite acesso de emuladores (ex: `http://10.0.2.2:8081`). Verifique se os IPs/portas usados estão incluídos nas `allowedOrigins`.
 
 ## Próximos Passos
 
-- Explore os controladores para entender como as requisições da API são tratadas.
-- Verifique os modelos e repositórios para a estrutura dos dados e a interação com o banco de dados.
-- O `DataInitializer` fornece dados de exemplo para testes.
-
-Sinta-se à vontade para contribuir e explorar o código!
+- Explore os controladores e serviços.
+- Verifique modelos e repositórios.
+- Use os dados de exemplo do `DataInitializer`.
+- Contribua e explore o código!
