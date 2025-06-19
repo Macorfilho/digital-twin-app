@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity, Button, ActivityIndicator, Alert } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { useApiUrl } from '../context/ApiUrlContext'; // Import useApiUrl
+import { useApiUrl } from '../context/ApiUrlContext';
 
-// Definição do tipo para os parâmetros de rota
 type SensorDetailRouteParams = {
   sensor: {
-    id: string; // ou number, dependendo do seu backend
+    id: string;
     name: string;
     unit: string;
     currentValue: number;
@@ -14,11 +13,10 @@ type SensorDetailRouteParams = {
   };
 };
 
-// Definição do tipo para a rota
 type SensorDetailScreenRouteProp = RouteProp<{ SensorDetail: SensorDetailRouteParams }, 'SensorDetail'>;
 
 interface Reading {
-  id: number; // ou string, consistente com seu backend
+  id: number;
   sensorId: string;
   value: number;
   timestamp: string;
@@ -28,7 +26,7 @@ const SensorDetailScreen: React.FC = () => {
   const route = useRoute<SensorDetailScreenRouteProp>();
   const navigation = useNavigation();
   const { sensor } = route.params;
-  const { apiUrl } = useApiUrl(); // Use the apiUrl from the context!
+  const { apiUrl } = useApiUrl();
   const [readings, setReadings] = useState<Reading[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +43,6 @@ const SensorDetailScreen: React.FC = () => {
         setLoading(true);
         setError(null);
 
-        // Use the apiUrl from the context!
         const response = await fetch(`${apiUrl}/readings/${sensor.id}`);
         if (!response.ok) {
           const errorText = await response.text();
@@ -105,7 +102,7 @@ const SensorDetailScreen: React.FC = () => {
       <Text style={styles.subtitle}>Leituras:</Text>
       <FlatList
         data={readings}
-        keyExtractor={(item) => item.id.toString()} // Use item.id directly, assuming it's a unique number or string
+        keyExtractor={(item) => item.id.toString()}
         renderItem={renderReadingItem}
       />
 
