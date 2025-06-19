@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native'; 
 import { useNavigation } from '@react-navigation/native';
 import { useApiUrl } from '../context/ApiUrlContext';
 
@@ -8,6 +8,11 @@ const ConfigScreen = ({ navigation }: { navigation: any }) => {
   const [apiUrl, setApiUrl] = useState(contextApiUrl);
 
   const handleSave = () => {
+    if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
+      Alert.alert('URL Inválida', 'A URL da API deve começar com "http://" ou "https://".');
+      return; 
+    }
+   
     setContextApiUrl(apiUrl);
     console.log('URL da API salva:', apiUrl);
     navigation.navigate('Splash');
@@ -30,7 +35,6 @@ const ConfigScreen = ({ navigation }: { navigation: any }) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
