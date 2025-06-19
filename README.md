@@ -1,52 +1,49 @@
 # Digital Twin App
 
-Este repositório contém o frontend (React Native) e o backend (Spring Boot) para o aplicativo Digital Twin.
-550432 Amanda Maia Ballet
-99761 Bruno Lopes da Silva
-98828 Marcelo Rodriguez Corner Filho
-99557 Pedro Cara Nascimento
+Este repositório contém o código-source completo para o aplicativo **Digital Twin**, uma solução abrangente projetada para simular e monitorar dispositivos no mundo real através de suas contrapartes digitais. O projeto é cuidadosamente segmentado em duas partes principais para facilitar o desenvolvimento, a manutenção e a escalabilidade:
 
-## Backend (Spring Boot)
+* **Backend:** Desenvolvido com **Spring Boot (Java)**, esta porção do sistema é o coração da lógica de negócios. Ele é responsável por toda a gestão de dados de sensores e leituras, incluindo armazenamento, recuperação e processamento. Além disso, expõe uma robusta API RESTful que serve como a ponte de comunicação para as outras partes do sistema.
+* **Frontend:** Construído com **React Native**, o frontend é a interface com a qual os usuários interagem. Seu principal papel é consumir a API fornecida pelo backend, traduzindo os dados brutos de sensores e leituras em visualizações intuitivas e interativas em dispositivos móveis (Android e iOS). Isso permite que os usuários monitorem o estado e o comportamento dos seus "gêmeos digitais" de forma eficiente e em tempo real.
 
-### Comandos para Compilar e Executar
+---
 
-Para executar o backend, navegue até o diretório `digital-twin` (a pasta raiz do backend) e execute o seguinte comando no terminal:
+## Membros da Equipe
 
-mvn spring-boot:run
+Este projeto foi desenvolvido com a valiosa contribuição dos seguintes membros da equipe:
 
-O backend estará disponível por padrão na porta 8080.
+* 550432 - Amanda Maia Ballet
+* 99761 - Bruno Lopes da Silva
+* 98828 - Marcelo Rodriguez Corner Filho
+* 99557 - Pedro Cara Nascimento
 
-Localização do Arquivo H2
+---
 
-O banco de dados H2 embutido é usado para persistência. O arquivo do banco de dados pode ser encontrado no seguinte local (relativo ao diretório onde a aplicação backend é executada):
+## Estrutura do Repositório
 
-./data/readings.mv.db
-Você pode acessar o console do H2 em http://localhost:8080/h2-console enquanto a aplicação estiver rodando. Use a URL JDBC jdbc:h2:file:./data/readings, com nome de usuário sa e deixe a senha em branco.
+A organização deste repositório foi pensada para promover clareza e facilitar a navegação entre as diferentes partes do projeto. Cada componente principal reside em seu próprio diretório raiz, garantindo a modularidade e a independência de cada subsistema:
 
-Endpoints Disponíveis
+├── digital-twin/            # Pasta raiz do projeto Backend (Spring Boot)
+│   ├── src/                 # Contém o código-fonte Java do backend
+│   ├── pom.xml              # Arquivo de configuração do Maven para o backend
+│   └── ...                  # Outros arquivos de configuração e recursos do backend
+└── digital-twin-front/      # Pasta raiz do projeto Frontend (React Native)
+├── src/                 # Contém o código-fonte JavaScript/TypeScript do frontend
+├── package.json         # Arquivo de manifesto do Node.js/React Native
+└── ...                  # Outros arquivos de configuração e recursos do frontend
 
-Aqui estão os endpoints da API REST disponíveis no backend:
 
-GET /api/sensors: Retorna a lista de todos os sensores.
-GET /api/sensors/{id}: Retorna os detalhes de um sensor específico pelo seu ID.
-GET /api/readings/{sensorId}: Retorna a lista de leituras para um sensor específico.
-POST /api/readingss: Adiciona uma nova leitura de sensor. Espera um objeto Reading no corpo da requisição.
+Essa estrutura facilita o gerenciamento de dependências separadas, a execução independente de cada parte e a colaboração entre equipes ou desenvolvedores focados em áreas específicas.
 
-Exemplo de Requisição cURL
+---
 
-Para obter a lista de sensores, você pode usar o seguinte comando cURL:
+## Como Começar
 
-curl http://localhost:8080/api/sensors
-Para obter as leituras de um sensor específico (substitua {sensorId} pelo ID real do sensor, por exemplo, o ID do sensor de pressão):
+Para configurar e executar o projeto completo em seu ambiente local e começar a explorar suas funcionalidades, é essencial seguir as instruções detalhadas e específicas para cada componente. Cada parte do projeto possui um README dedicado que aborda seus pré-requisitos, etapas de instalação e execução.
 
-curl http://localhost:8080/api/readings/{sensorId}
+Recomendamos que você comece configurando o backend primeiro, pois o frontend depende diretamente da sua disponibilidade e dos seus endpoints da API.
 
-curl -X POST -H "Content-Type: application/json" -d '{
-"sensorId": 1,
-"value": 28.5,
-"timestamp": "2025-05-25T00:30:00"
-}' http://localhost:8080/api/readings
+---
 
-Comandos para Executar:
+## Visão Geral
 
-Em cada pasta tera como executar cada parte do projeto
+O aplicativo Digital Twin representa uma abordagem moderna para o monitoramento e a simulação de ativos físicos. Ao criar uma representação virtual fiel de um objeto ou sistema real, a plataforma permite a **visualização em tempo real** de dados de sensores, o que é crucial para análises preditivas, manutenção proativa e otimização de desempenho. Através desta interface, os usuários podem acompanhar métricas vitais como temperatura, pressão, umidade, ou qualquer outro dado relevante que seus sensores físicos possam coletar. Além disso, a capacidade de visualizar **históricos de leituras** oferece insights valiosos sobre tendências e comportamentos passados, auxiliando na tomada de decisões informadas e no aprimoramento contínuo dos sistemas monitorados. Este projeto serve como uma base robusta para futuras expansões em áreas como IoT (Internet das Coisas), automação e análise de dados em tempo real.
