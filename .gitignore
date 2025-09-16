@@ -1,0 +1,40 @@
+# Ignore Maven target directory
+digital-twin/target/
+
+# Ignore IntelliJ IDEA project files
+*.iml
+.idea/
+
+# Ignore Eclipse project files
+.project
+.classpath
+.settings/
+
+# Ignore VSCode settings
+.vscode/
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+
+# Ignore node_modules for React Native frontend
+digital-twin-front/node_modules/
+
+# Ignore build outputs for React Native
+digital-twin-front/android/app/build/
+digital-twin-front/ios/build/
+digital-twin-front/ios/Pods/
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore H2 database files
+digital-twin/data/
+
+# Ignore npm/yarn/lock files (optional, if not committed)
+digital-twin-front/yarn.lock
+digital-twin-front/package-lock.json
