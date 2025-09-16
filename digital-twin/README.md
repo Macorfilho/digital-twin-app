@@ -2,6 +2,14 @@
 
 Este diretório contém o código-fonte do backend da aplicação Digital Twin, construído com Spring Boot e Java. Ele fornece uma API RESTful para gerenciar sensores e suas leituras.
 
+## Tecnologias Utilizadas
+
+- **Java 17+**
+- **Spring Boot:** Framework para criação de aplicações Java.
+- **Spring Data JPA:** Para persistência de dados.
+- **Maven:** Gerenciador de dependências e build.
+- **H2 Database:** Banco de dados em memória.
+
 ## Pré-requisitos
 
 Certifique-se de ter os seguintes pré-requisitos instalados em sua máquina de desenvolvimento:
@@ -19,10 +27,10 @@ Siga estas etapas para colocar o backend em funcionamento:
     cd digital-twin
     ```
 
-2. Execute a aplicação Spring Boot usando o Maven:
+2. Execute a aplicação Spring Boot usando o Maven Wrapper:
 
     ```bash
-    mvn spring-boot:run
+    ./mvnw spring-boot:run
     ```
 
 Isso irá compilar o projeto, baixar as dependências necessárias e iniciar o servidor web Tomcat embutido. A aplicação estará disponível por padrão na porta 8080.
@@ -35,11 +43,11 @@ O backend segue uma arquitetura RESTful com camadas bem definidas:
 - **Repositórios** (`src/main/java/com/newbyte/digital_twin/repository/`): Interfaces com Spring Data JPA.
 - **Serviços** (`src/main/java/com/newbyte/digital_twin/service/`): Contém a lógica de negócios.
 - **Controladores** (`src/main/java/com/newbyte/digital_twin/controller/`): Lidam com requisições HTTP e retornam JSON.
-- **Inicializador de Dados** (`src/main/java/com/newbyte/digital_twin/DataInitializer.java`): Popula o banco de dados H2 com dados de exemplo.
+- **Inicializador de Dados** (`src/main/java/com/newbyte/digital_twin/DataInitializer.java`): Popula o banco de dados H2 com dados de exemplo na inicialização.
 
 ## Banco de Dados
 
-O backend utiliza o banco de dados embutido H2. O arquivo do banco é armazenado em:
+O backend utiliza o banco de dados em memória H2. Isso significa que os dados não persistem entre reinicializações do servidor. O arquivo do banco é armazenado em:
 
 ```
 ./data/readings.mv.db
@@ -132,16 +140,14 @@ Adiciona nova leitura.
 - Adicionar nova leitura:
 
   ```bash
-  curl -X POST -H "Content-Type: application/json" -d '{
-    "sensorId": "sensor-3",
-    "value": 75.2,
-    "timestamp": "2025-06-20T15:00:00"
-  }' http://localhost:8080/api/readings
+  curl -X POST -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "sensorId=sensor-3&value=75.2&timestamp=2025-06-20T15:00:00Z" \
+  http://localhost:8080/api/readings
   ```
 
 ## Configuração CORS
 
-Definida em `WebConfig.java`, permite acesso de emuladores (ex: `http://10.0.2.2:8081`). Verifique se os IPs/portas usados estão incluídos nas `allowedOrigins`.
+Definida em `CorsConfig.java`, permite acesso de emuladores (ex: `http://10.0.2.2:8081`). Verifique se os IPs/portas usados estão incluídos nas `allowedOrigins`.
 
 ## Próximos Passos
 

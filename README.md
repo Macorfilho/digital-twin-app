@@ -2,69 +2,92 @@
 
 Este repositório contém o código-source completo para o aplicativo Digital Twin, uma solução abrangente projetada para simular e monitorar dispositivos no mundo real através de suas contrapartes digitais. O projeto é cuidadosamente segmentado em duas partes principais para facilitar o desenvolvimento, a manutenção e a escalabilidade:
 
-## Backend
-
-Desenvolvido com Spring Boot (Java), esta porção do sistema é o coração da lógica de negócios. Ele é responsável por toda a gestão de dados de sensores e leituras, incluindo armazenamento, recuperação e processamento. Além disso, expõe uma robusta API RESTful que serve como a ponte de comunicação para as outras partes do sistema.
-
-## Frontend
-
-Construído com React Native, o frontend é a interface com a qual os usuários interagem. Seu principal papel é consumir a API fornecida pelo backend, traduzindo os dados brutos de sensores e leituras em visualizações intuitivas e interativas em dispositivos móveis (Android e iOS). Isso permite que os usuários monitorem o estado e o comportamento dos seus "gêmeos digitais" de forma eficiente e em tempo real.
+- **Backend:** Desenvolvido com Spring Boot (Java), é responsável pela gestão de dados de sensores, leituras e pela API RESTful.
+- **Frontend:** Construído com React Native (Expo), fornece a interface móvel para visualização e interação com os dados.
 
 ## Membros da Equipe
 
-Este projeto foi desenvolvido com a valiosa contribuição dos seguintes membros da equipe:
-
-- 550432 - Amanda Maia Ballet  
-- 99761 - Bruno Lopes da Silva  
-- 98828 - Marcelo Rodriguez Corner Filho  
-- 99557 - Pedro Cara Nascimento  
+- 550432 - Amanda Maia Ballet
+- 99761 - Bruno Lopes da Silva
+- 98828 - Marcelo Rodriguez Corner Filho
+- 99557 - Pedro Cara Nascimento
 
 ## Estrutura do Repositório
 
-A organização deste repositório foi pensada para promover clareza e facilitar a navegação entre as diferentes partes do projeto. Cada componente principal reside em seu próprio diretório raiz, garantindo a modularidade e a independência de cada subsistema:
-
 ```
 .
-├── digital-twin/                # Pasta raiz do projeto Backend (Spring Boot)
-│   ├── src/                     # Contém o código-fonte Java do backend
-│   │   ├── main/
-│   │   │   ├── java/
-│   │   │   │   └── com/
-│   │   │   │       └── newbyte/
-│   │   │   │           └── digital_twin/
-│   │   │   │               ├── controller/  # Controladores REST
-│   │   │   │               ├── model/       # Modelos de dados (Sensor, Reading)
-│   │   │   │               ├── repository/  # Interfaces de repositório
-│   │   │   │               └── service/     # Lógica de negócios
-│   │   │   └── resources/ # Arquivos de configuração, estáticos
-│   │   └── test/
-│   ├── pom.xml                  # Arquivo de configuração do Maven
-│   ├── data/                    # Diretório para o banco de dados H2
-│   └── README.md                # README específico do Backend
-└── digital-twin-front/          # Pasta raiz do projeto Frontend (React Native)
-    ├── src/                     # Contém o código-fonte JavaScript/TypeScript do frontend
-    │   ├── assets/              # Imagens e outros recursos estáticos
-    │   ├── components/          # Componentes React reutilizáveis
-    │   ├── context/             # Contextos React (ex: ApiUrlContext)
-    │   ├── navigation/          # Configuração de navegação
-    │   └── screens/             # Telas do aplicativo (Splash, Config, SensorList, SensorDetail)
-    ├── App.tsx                  # Ponto de entrada principal do aplicativo
-    ├── package.json             # Arquivo de manifesto do Node.js/React Native
-    ├── metro.config.js          # Configuração do bundler Metro
-    └── README.md                # README específico do Frontend
+├── digital-twin/                # Projeto Backend (Spring Boot)
+│   ├── src/
+│   ├── pom.xml
+│   └── README.md
+└── digital-twin-front/          # Projeto Frontend (React Native)
+    ├── src/
+    ├── assets/
+    ├── App.tsx
+    ├── package.json
+    └── README.md
 ```
 
-Essa estrutura facilita o gerenciamento de dependências separadas, a execução independente de cada parte e a colaboração entre equipes ou desenvolvedores focados em áreas específicas.
+## Tecnologias Utilizadas
+
+### Backend
+- **Java 17+**
+- **Spring Boot:** Framework para criação de aplicações Java.
+- **Spring Data JPA:** Para persistência de dados.
+- **Maven:** Gerenciador de dependências e build.
+- **H2 Database:** Banco de dados em memória.
+
+### Frontend
+- **React Native:** Framework para desenvolvimento de aplicativos móveis.
+- **Expo:** Plataforma para facilitar o desenvolvimento e build de apps React Native.
+- **TypeScript:** Superset do JavaScript que adiciona tipagem estática.
+- **React Navigation:** Para gerenciamento de navegação.
+- **Victory Native & @shopify/react-native-skia:** Para a criação de gráficos.
+- **AsyncStorage:** Para persistência de dados no dispositivo.
 
 ## Como Começar
 
-Para configurar e executar o projeto completo em seu ambiente local e começar a explorar suas funcionalidades, é essencial seguir as instruções detalhadas e específicas para cada componente. Cada parte do projeto possui um README dedicado que aborda seus pré-requisitos, etapas de instalação e execução.
+### Pré-requisitos
 
-- Para instruções detalhadas sobre como configurar e iniciar o backend: **Backend (Spring Boot)**
-- Para orientações completas sobre como configurar e rodar o aplicativo móvel: **Frontend (React Native)**
+- **Backend:** Java 17+, Maven
+- **Frontend:** Node.js, npm/yarn, Expo CLI, e um emulador/dispositivo físico.
 
-Recomendamos que você comece configurando o backend primeiro, pois o frontend depende diretamente da sua disponibilidade e dos seus endpoints da API.
+### 1. Executar o Backend
 
-## Visão Geral
+Em um terminal, navegue até a pasta do backend e inicie o servidor Spring Boot:
 
-O aplicativo Digital Twin representa uma abordagem moderna para o monitoramento e a simulação de ativos físicos. Ao criar uma representação virtual fiel de um objeto ou sistema real, a plataforma permite a visualização em tempo real de dados de sensores, o que é crucial para análises preditivas, manutenção proativa e otimização de desempenho. Através desta interface, os usuários podem acompanhar métricas vitais como temperatura, pressão, umidade, ou qualquer outro dado relevante que seus sensores físicos possam coletar. Além disso, a capacidade de visualizar históricos de leituras oferece insights valiosos sobre tendências e comportamentos passados, auxiliando na tomada de decisões informadas e no aprimoramento contínuo dos sistemas monitorados. Este projeto serve como uma base robusta para futuras expansões em áreas como IoT (Internet das Coisas), automação e análise de dados em tempo real.
+```bash
+cd digital-twin
+./mvnw spring-boot:run
+```
+
+O servidor estará disponível em `http://localhost:8080`.
+
+**Observação:** O backend utiliza um banco de dados em memória (H2), o que significa que os dados não persistem entre reinicializações do servidor.
+
+### 2. Executar o Frontend
+
+Em outro terminal, navegue até a pasta do frontend, instale as dependências e inicie o aplicativo:
+
+```bash
+cd digital-twin-front
+npm install
+expo start
+```
+
+Siga as instruções no terminal do Expo para abrir o aplicativo em um emulador ou no seu dispositivo.
+
+### 3. Configurar a API no App
+
+Ao iniciar o aplicativo pela primeira vez, você será direcionado para a tela de configuração. Insira a URL do seu backend.
+
+- Se estiver usando um **emulador Android**, a URL é: `http://10.0.2.2:8080/api`
+- Se estiver usando um **emulador iOS ou dispositivo físico** na mesma rede, use o IP da sua máquina (ex: `http://192.168.1.10:8080/api`).
+
+## Funcionalidades Implementadas
+
+- **Visualização de Sensores:** Tela principal que lista todos os sensores disponíveis.
+- **Detalhes do Sensor:** Tela de detalhes que exibe informações do sensor e um gráfico com o histórico de leituras.
+- **Gráfico de Leituras:** O gráfico na tela de detalhes exibe as últimas 20 leituras do sensor, com eixos X (tempo) e Y (valor) e labels.
+- **Registro de Novas Leituras:** Funcionalidade para registrar um novo valor (mock) para o sensor, com atualização automática do gráfico.
+- **Configuração de API:** Tela para configurar o endereço do servidor backend, com persistência dos dados.

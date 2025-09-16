@@ -1,111 +1,80 @@
-Digital Twin App - Frontend (React Native)
----
-Este diretório contém o código-fonte do aplicativo frontend para o projeto Digital Twin, construído com **React Native**. Ele é responsável por consumir a API do backend Spring Boot e exibir os dados em uma interface de usuário móvel.
+# Digital Twin App - Frontend (React Native)
+
+Este diretório contém o código-fonte do aplicativo frontend para o projeto Digital Twin, construído com **React Native** e **Expo**. Ele é responsável por consumir a API do backend e exibir os dados dos sensores em uma interface móvel interativa.
+
+## Tecnologias e Bibliotecas
+
+- **React Native & Expo:** Plataforma para construção de aplicativos móveis multiplataforma.
+- **TypeScript:** Superset de JavaScript que adiciona tipagem estática.
+- **React Navigation:** Para gerenciamento de navegação e fluxo entre telas.
+- **Victory Native & @shopify/react-native-skia:** Para a renderização de gráficos de alto desempenho.
+- **AsyncStorage:** Para persistência de dados no dispositivo.
+- **Context API:** Para gerenciamento de estado global (URL da API).
+
+## Como Executar
 
 ### Pré-requisitos
----
-Para configurar e executar o aplicativo frontend em sua máquina, você precisará do ambiente de desenvolvimento React Native configurado. Isso geralmente inclui:
 
-* **Node.js**: Versão LTS (Long Term Support) recomendada.
-* **npm** (Node Package Manager): Instalado junto com o Node.js.
-* **React Native CLI**: Para comandos específicos do React Native.
-* **Xcode** (para desenvolvimento iOS) ou **Android Studio** (para desenvolvimento Android) com os SDKs e emuladores configurados.
+- Node.js (versão LTS)
+- npm ou yarn
+- Expo CLI
+- Emulador (Android/iOS) ou dispositivo físico com o app Expo Go.
 
-Consulte a documentação oficial do React Native para obter instruções detalhadas e as versões recomendadas das ferramentas.
+### Passos
 
-### Como Executar
----
-Siga estas etapas para executar o aplicativo frontend:
+1.  **Navegue até a pasta do frontend:**
+    ```bash
+    cd digital-twin-front
+    ```
 
-Navegue até o diretório do projeto frontend:
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-```bash
-cd digital-twin-front
-```
+3.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    expo start
+    ```
+    Use o QR Code no app Expo Go ou selecione uma das opções no terminal para abrir o app no seu emulador. Recomenda-se limpar o cache com `expo start -c` caso encontre problemas.
 
-Instale as dependências do projeto:
-
-```bash
-npm install
-```
-
-Inicie o bundler Metro e execute o aplicativo:
-
-```bash
-npx expo start -c
-```
-
-Este comando iniciará o Metro Bundler e abrirá uma aba no seu navegador com opções para executar o aplicativo em um emulador Android, iOS, ou no seu próprio dispositivo físico através do aplicativo Expo Go. A flag `-c` limpa o cache do Metro Bundler, o que é útil para resolver problemas.
-
-### Estrutura do Projeto
----
-O projeto React Native segue uma estrutura de pastas modular para melhor organização e escalabilidade:
+## Estrutura do Projeto
 
 ```
 digital-twin-front/
-├── .expo/                       # Arquivos de cache e configuração do Expo
-├── .vscode/                     # Configurações do VS Code
-├── assets/                      # Recursos estáticos do aplicativo
-│   ├── adaptive-icon.png
-│   ├── favicon.png
-│   ├── icon.png
-│   ├── logo.png
-│   └── splash-icon.png
-├── node_modules/                # Dependências do projeto (geradas pelo npm/yarn)
-├── src/                         # Código-fonte principal do aplicativo
-│   ├── context/                 # Contextos React (ex: ApiUrlContext)
-│   │   └── ApiUrlContext.tsx
-│   ├── navigation/              # Configuração do React Navigation
-│   │   └── AppNavigator.tsx
-│   └── screens/                 # Componentes de tela (páginas do aplicativo)
+├── assets/
+│   └── fonts/
+│       └── Roboto-Regular.ttf   # Fonte para os gráficos
+├── src/
+│   ├── context/
+│   │   └── ApiUrlContext.tsx    # Contexto para a URL da API
+│   ├── navigation/
+│   │   └── AppNavigator.tsx     # Navegador principal
+│   └── screens/
 │       ├── ConfigScreen.tsx
 │       ├── SensorDetailScreen.tsx
 │       ├── SensorListScreen.tsx
 │       └── SplashScreen.tsx
-├── .gitignore                   # Arquivo para ignorar arquivos/pastas no Git
-├── app.json                     # Configuração do aplicativo Expo
-├── App.tsx                      # Ponto de entrada principal do React Native
-├── index.ts                     # Arquivo de inicialização do Expo (geralmente)
-├── package-lock.json            # Bloqueio de versão de dependências
-├── package.json                 # Manifest do projeto e dependências
-├── README.md                    # Documentação do projeto Frontend
-└── tsconfig.json                # Configuração do TypeScript
+├── App.tsx                      # Ponto de entrada do app
+├── package.json
+└── README.md
 ```
 
-### Configuração da API
----
-A comunicação entre o aplicativo frontend (React Native) e o backend (Spring Boot) depende de uma URL base da API configurada corretamente.
+## Funcionalidades
 
-#### Como Configurar a URL da API no Aplicativo:
-Ao iniciar o aplicativo, a **SplashScreen** será exibida. Se a URL da API não estiver configurada ou for inválida, o aplicativo tentará direcionar você automaticamente para a **ConfigScreen**.
-Na **ConfigScreen**, você encontrará um campo de texto onde poderá inserir a URL completa do seu backend.
+- **Tela de Splash e Configuração:** O app verifica se a URL da API está configurada. Caso não esteja, o usuário é direcionado para a tela de configuração para inseri-la.
+- **Lista de Sensores:** A tela principal (`SensorListScreen`) busca e exibe uma lista de todos os sensores disponíveis no backend.
+- **Detalhes do Sensor:** Ao selecionar um sensor, o usuário navega para a `SensorDetailScreen`, que mostra:
+    - Informações detalhadas do sensor.
+    - Um gráfico do histórico de leituras renderizado com `@shopify/react-native-skia`. O gráfico exibe as últimas 20 leituras para manter a visualização focada.
+- **Registro de Leituras:** Um botão permite registrar uma nova leitura com um valor aleatório (mock) para o sensor selecionado. O gráfico é atualizado automaticamente.
+- **Atualização Manual:** Um botão permite atualizar manualmente os dados do gráfico.
 
-**Para conectar-se a um backend LOCAL (rodando no seu computador) a partir de um emulador Android:**
-Use o IP especial **10.0.2.2** para se referir ao `localhost` da sua máquina de desenvolvimento.
-Exemplo: Se seu backend Spring Boot está rodando na porta **8080** e seu path base é `/api`, a URL a ser inserida será:
+## Configuração da API no App
 
-```
-http://10.0.2.2:8080/api
-```
+A comunicação com o backend depende da URL da API.
 
-**Importante**: O **10.0.2.2** mapeia para o `localhost` da sua máquina dentro do emulador. Certifique-se de que o número da porta (8080 no exemplo) corresponde à porta real do seu backend.
+- **Emulador Android:** Use `http://10.0.2.2:8080/api` para se conectar a um backend rodando localmente.
+- **Emulador iOS / Dispositivo Físico:** Use o endereço de IP da sua máquina na rede local (ex: `http://192.168.1.10:8080/api`).
 
-**Se você estiver usando um dispositivo Android físico conectado na mesma rede Wi-Fi que o seu computador:**
-Você precisará usar o **endereço IP real da sua máquina host** na rede local. Para encontrá-lo no Windows, abra o `Prompt de Comando` e digite `ipconfig`. Procure o "Endereço IPv4" do seu adaptador de rede (ex: `192.168.1.10`).
-Exemplo: Se o IP da sua máquina for **192.168.1.10** e seu backend estiver na porta **8080**, a URL será:
-
-```
-http://192.168.1.10:8080/api
-```
-
-Após inserir a URL correta, clique em **"Salvar"**. O aplicativo irá persistir esta URL localmente usando **AsyncStorage** (armazenamento assíncrono), para que você não precise inseri-la novamente a cada inicialização.
-
-### CORS no Backend
----
-Lembre-se que para que o frontend possa se comunicar com o backend, o backend (Spring Boot) deve estar configurado para permitir requisições Cross-Origin (CORS) da origem do seu emulador/dispositivo. Se você encontrar erros de "Network request failed" ou "CORS policy", verifique a configuração CORS no seu projeto Spring Boot.
-
-### Próximos Passos
----
-* Explore os componentes de tela (`screens/`) para entender o fluxo de navegação e a exibição dos dados.
-* Examine o `context/ApiUrlContext.tsx` para ver como a URL da API é gerenciada globalmente no aplicativo.
-* Teste a navegação entre as telas de listagem e detalhes do sensor, verificando as chamadas à API no console do Metro Bundler.
+A URL é salva no dispositivo para não precisar ser inserida novamente.
