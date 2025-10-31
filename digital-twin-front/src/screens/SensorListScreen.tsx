@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ActivityIndicator, Alert, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useApiUrl } from '../context/ApiUrlContext'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useApiUrl } from '../context/ApiUrlContext';
 
 interface Sensor {
   id: string;
@@ -23,36 +24,65 @@ const SensorItem = ({ sensor }: { sensor: Sensor }) => (
 
 const SensorListScreen: React.FC = () => {
   const navigation = useNavigation();
-  const { apiUrl } = useApiUrl(); 
+  const { apiUrl } = useApiUrl();
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    navigation.replace('Login');
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button onPress={handleLogout} title="Logout" color="#dc3545" />
+      ),
+    });
+  }, [navigation]);
+
   useEffect(() => {
     const fetchSensors = async () => {
-      // Verificar se a URL da API está configurada
       if (!apiUrl) {
-        console.warn('API URL not set. Please configure it in the settings.');
         setError('URL da API não configurada. Por favor, vá para Configurações.');
         setLoading(false);
         return;
       }
 
+      const token = await AsyncStorage.getItem('userToken');
+      if (!token) {
+        handleLogout();
+        return;
+      }
+
       try {
         setLoading(true);
-        setError(null); 
+        setError(null);
 
-        const response = await fetch(`${apiUrl}/sensors`);
+        const response = await fetch(`${apiUrl}/api/sensors`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          Alert.alert('Sessão Expirada', 'Sua sessão expirou. Por favor, faça login novamente.');
+          handleLogout();
+          return;
+        }
+
         if (!response.ok) {
           const errorText = await response.text();
           throw new Error(`Erro HTTP! Status: ${response.status}. Detalhes: ${errorText || 'N/A'}`);
         }
+
         const data: Sensor[] = await response.json();
         setSensors(data);
       } catch (err: any) {
         console.error('Erro ao buscar sensores:', err);
         setError(`Falha ao carregar sensores: ${err.message}`);
-        Alert.alert('Erro de Conexão', `Não foi possível carregar os dados dos sensores. Verifique a URL da API nas configurações.`);
+        Alert.alert('Erro de Conexão', `Não foi possível carregar os dados dos sensores. Verifique a URL da API e sua conexão.`);
       } finally {
         setLoading(false);
       }
@@ -81,9 +111,6 @@ const SensorListScreen: React.FC = () => {
         <TouchableOpacity style={styles.retryButton} onPress={() => navigation.navigate('Config')}>
           <Text style={styles.retryButtonText}>Ir para Configurações</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.retryButton} onPress={() => { setLoading(true); setError(null); }}>
-          <Text style={styles.retryButtonText}>Tentar Novamente</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -92,8 +119,8 @@ const SensorListScreen: React.FC = () => {
     return (
       <View style={[styles.container, styles.centerContent]}>
         <Text>Nenhum sensor encontrado.</Text>
-        <TouchableOpacity style={styles.retryButton} onPress={() => navigation.navigate('Config')}>
-          <Text style={styles.retryButtonText}>Verificar Configurações da API</Text>
+        <TouchableOpacity style={styles.retryButton} onPress={() => { setLoading(true); setError(null); /* Refetch */ }}>
+          <Text style={styles.retryButtonText}>Tentar Novamente</Text>
         </TouchableOpacity>
       </View>
     );

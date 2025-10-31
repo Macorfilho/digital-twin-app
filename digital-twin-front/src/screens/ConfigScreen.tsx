@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native'; 
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApiUrl } from '../context/ApiUrlContext';
 
-const ConfigScreen = ({ navigation }: { navigation: any }) => {
+const ConfigScreen = () => {
+  const navigation = useNavigation();
   const { apiUrl: contextApiUrl, setApiUrl: setContextApiUrl } = useApiUrl();
   const [apiUrl, setApiUrl] = useState(contextApiUrl);
 
   const handleSave = () => {
     if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
       Alert.alert('URL Inválida', 'A URL da API deve começar com "http://" ou "https://".');
-      return; 
+      return;
     }
-   
+
     setContextApiUrl(apiUrl);
-    console.log('URL da API salva:', apiUrl);
-    navigation.navigate('Splash');
+    Alert.alert('Sucesso', 'A URL da API foi salva. Por favor, faça o login.');
+    navigation.navigate('Login');
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('userToken');
+    navigation.replace('Login');
   };
 
   return (
@@ -30,7 +37,10 @@ const ConfigScreen = ({ navigation }: { navigation: any }) => {
         autoCapitalize="none"
       />
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Salvar</Text>
+        <Text style={styles.saveButtonText}>Salvar e ir para Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutButtonText}>Logout</Text>
       </TouchableOpacity>
     </View>
   );
@@ -56,22 +66,33 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 50,
+    borderColor: '#ccc',
     borderWidth: 1,
+    borderRadius: 8,
     marginBottom: 20,
     paddingHorizontal: 10,
-    borderRadius: 5,
     backgroundColor: '#fff',
-    color: '#333',
   },
   saveButton: {
     backgroundColor: '#28a745',
     paddingVertical: 15,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: 'center',
   },
   saveButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  logoutButton: {
+    backgroundColor: '#dc3545',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  logoutButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
