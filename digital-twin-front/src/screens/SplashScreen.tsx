@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, ActivityIndicator, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApiUrl } from '../context/ApiUrlContext';
 import logo from '../../assets/logo.png';
 
@@ -9,37 +10,35 @@ const SplashScreen = () => {
   const { apiUrl } = useApiUrl();
 
   useEffect(() => {
-    const checkApiUrlAndNavigate = async () => {
+    const checkAuth = async () => {
+      // Wait for a bit to show the splash screen
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       if (!apiUrl || !apiUrl.startsWith('http')) {
         navigation.replace('Config');
+        return;
+      }
+
+      try {
+        const token = await AsyncStorage.getItem('userToken');
+        if (token) {
+          navigation.replace('SensorList');
+        } else {
+          navigation.replace('Login');
+        }
+      } catch (e) {
+        console.error('Failed to load token', e);
+        navigation.replace('Login');
       }
     };
 
-    checkApiUrlAndNavigate();
+    checkAuth();
   }, [apiUrl, navigation]);
-
-  const handleStart = () => {
-    if (!apiUrl || !apiUrl.startsWith('http')) {
-      alert('URL da API não configurada ou inválida. Por favor, configure-a.');
-      navigation.navigate('Config');
-      return;
-    }
-    navigation.navigate('SensorList');
-  };
-
-  const handleConfig = () => {
-    navigation.navigate('Config');
-  };
 
   return (
     <View style={styles.container}>
       <Image source={logo} style={styles.logoImage} resizeMode="contain" />
-      <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-        <Text style={styles.startButtonText}>Entrar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.configButton} onPress={handleConfig}>
-        <Text style={styles.configButtonText}>Configurar API</Text>
-      </TouchableOpacity>
+      <ActivityIndicator size="large" color="#007bff" style={{ marginTop: 20 }} />
     </View>
   );
 };
@@ -55,29 +54,6 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     marginBottom: 40,
-  },
-  startButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  startButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  configButton: {
-    backgroundColor: '#6c757d',
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 5,
-  },
-  configButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 });
 

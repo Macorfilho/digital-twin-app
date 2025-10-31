@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    container_name: digitaltwin-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: digitaltwindb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-data:
+
+# Usage:
+# From the `digital-twin` folder run:
+#   docker compose up -d
+# Then run the app with environment variables (example):
+#   SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/digitaltwindb \
+#   SPRING_DATASOURCE_USERNAME=postgres \
+#   SPRING_DATASOURCE_PASSWORD=postgres \
+#   JWT_SECRET=my-very-strong-secret JWT_EXPIRATION_MS=3600000 \
+#   ./mvnw spring-boot:run
