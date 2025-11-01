@@ -14,8 +14,7 @@ public class ReadingService {
     @Autowired
     private ReadingRepository readingRepository;
 
-    public Reading saveReading(Long sensorId, Double value, LocalDateTime timestamp) {
-        Reading reading = new Reading(sensorId, value, timestamp);
+    public Reading saveReading(Reading reading) {
         return readingRepository.save(reading);
     }
 

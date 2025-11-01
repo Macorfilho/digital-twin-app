@@ -22,9 +22,6 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        // Limpa todos os dados existentes
-        readingRepository.deleteAll();
-        sensorRepository.deleteAll();
 
         // Cria os sensores desejados
         Sensor pressaoSensor1 = new Sensor("Pressão 1", "hPa", 1012.5, "OK");
