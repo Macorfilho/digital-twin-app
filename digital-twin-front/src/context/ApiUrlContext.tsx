@@ -13,7 +13,7 @@ interface ApiUrlProviderProps {
 }
 
 export const ApiUrlProvider: React.FC<ApiUrlProviderProps> = ({ children }) => {
-  const [apiUrl, setApiUrlState] = useState<string>('http://localhost:8080/api');
+  const [apiUrl, setApiUrlState] = useState<string>('http://localhost:8080');
 
   useEffect(() => {
     const loadApiUrl = async () => {
