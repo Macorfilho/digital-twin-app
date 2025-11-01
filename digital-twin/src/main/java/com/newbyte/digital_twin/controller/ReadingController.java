@@ -19,11 +19,8 @@ public class ReadingController {
     private ReadingService readingService;
 
     @PostMapping
-    public ResponseEntity<Reading> saveReading(
-            @RequestParam Long sensorId,
-            @RequestParam Double value,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime timestamp) {
-        Reading savedReading = readingService.saveReading(sensorId, value, timestamp);
+    public ResponseEntity<Reading> saveReading(@RequestBody Reading reading) {
+        Reading savedReading = readingService.saveReading(reading);
         return new ResponseEntity<>(savedReading, HttpStatus.CREATED);
     }
 
